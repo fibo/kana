@@ -6,9 +6,27 @@
   <meta name="viewport" content="width=device-width" />
   <title>kana</title>
   <link rel="stylesheet" href="style.css">
+
+  <template id="mora-char">
+    <slot></slot>
+  </template>
+
+  <template id="basic-katakana">
+    <mora-char index="0" display="katakana"></mora-char>
+    <mora-char index="1" display="katakana"></mora-char>
+    <mora-char index="2" display="katakana"></mora-char>
+    <mora-char index="3" display="katakana"></mora-char>
+    <mora-char index="4" display="katakana"></mora-char>
+  </template>
 </head>
 <body>
-  <mora-char index="1" display="hiragana"></mora-char>
+  <p>Basic hiragana characters</p>
+  <basic-chars display="hiragana"></basic-chars>
+
+  <p>Basic katakana characters</p>
+  <basic-chars display="katakana"></basic-chars>
+
+  <basic-katakana></basic-katakana>
   <script type="module" src="elements.js"></script>
 </body>
 </html>

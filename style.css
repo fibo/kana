@@ -3,3 +3,9 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
   }
 }
+
+@layer colors {
+  :root {
+    --color-neutral: gainsboro;
+  }
+}
