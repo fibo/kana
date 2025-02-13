@@ -15,16 +15,15 @@ function html(strings, ...expressions) {
  */
 export class MoraChar extends HTMLElement {
   static get observedAttributes() { return ['index', 'display'] }
+  textNode = document.createTextNode('')
   constructor() {
     super()
-    this.attachShadow({ mode: 'open' })
-    const template = html`<slot></slot>`
-    this.shadowRoot.appendChild(template.content.cloneNode(true))
+    this.appendChild(this.textNode)
   }
   attributeChangedCallback(name, _old, value) {
     if (name == 'display') this.display = value
     if (name == 'index') this.index = value
-    this.textContent = kana[this.index]?.[this.display] ?? ''
+    this.textNode.textContent = kana[this.index]?.[this.display] ?? ''
   }
 }
 
