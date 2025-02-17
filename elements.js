@@ -137,8 +137,102 @@ class BasicChars extends HTMLElement {
   }
 }
 
+class MemoryGame extends HTMLElement {
+  selectedRow
+  selectedCol
+  cellSelectedCssClass = 'cell--selected'
+  cells = new Map()
+  constructor() {
+    super()
+    this.attachShadow({ mode: 'open' })
+    const template = html`
+      <style>
+        .container {
+          display: inline-grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--size-1);
+          background: var(--color-neutral);
+        }
+        .cell {
+          width: var(--size-2);
+          height: var(--size-2);
+          background: var(--color-white);
+          border: 1px solid transparent;
+        }
+        .cell--selected {
+          border-color: var(--color-accent);
+        }
+      </style>
+      <div class="container">
+      </div>
+    `
+    this.shadowRoot.appendChild(template.content.cloneNode(true))
+    this.container = this.shadowRoot.querySelector('.container')
+    const numCols = 2
+    const numRows = 6
+    for (let row = 0; row < numRows; row++)
+      for (let col = 0; col < numCols; col++)
+        this.createCell(row, col)
+  }
+  connectedCallback() {
+    this.container.addEventListener('click', this)
+  }
+  handleEvent(event) {
+    if (event.type == 'click') {
+      event.stopPropagation()
+      const { target } = event
+      if (target === this.container) return
+      const { row, col } = target.dataset
+      const { selectedCol, selectedRow } = this
+      if (selectedRow && selectedCol) {
+        if (col == selectedCol) {
+          if (row == selectedRow) {
+            // Clicking on selected cell, deselect it.
+            this.deselectCell(selectedRow, selectedCol)
+          } else {
+            // Change previous selection.
+            this.deselectCell(selectedRow, selectedCol)
+            this.selectCell(row, col)
+          }
+        } else {
+          // There could be a match.
+        }
+        return
+      } else {
+        // No previous selection, just select cell.
+        this.selectCell(row, col)
+      }
+      // event.target.classList.toggle
+    }
+  }
+  cellKey(row, col) {
+    return `${row}-${col}`
+  }
+  createCell(row, col) {
+    const cell = document.createElement('div')
+    cell.classList.add('cell')
+    this.cells.set(this.cellKey(row, col), cell)
+    cell.dataset.row = row
+    cell.dataset.col = col
+    this.container.appendChild(cell)
+  }
+  selectCell(row, col) {
+    const cell = this.cells.get(this.cellKey(row, col))
+    cell.classList.add(this.cellSelectedCssClass)
+    this.selectedRow = row
+    this.selectedCol = col
+  }
+  deselectCell(row, col) {
+    const cell = this.cells.get(this.cellKey(row, col))
+    cell.classList.remove(this.cellSelectedCssClass)
+    this.selectedRow = undefined
+    this.selectedCol = undefined
+  }
+}
+
 addEventListener('load', () => {
   customElements.define('basic-chars', BasicChars)
+  customElements.define('memory-game', MemoryGame)
   customElements.define('mora-char', MoraChar)
 })
 

@@ -6,6 +6,15 @@
 
 @layer colors {
   :root {
+    --color-white: white;
     --color-neutral: gainsboro;
+    --color-accent: magenta;
+  }
+}
+
+@layer space {
+  :root {
+    --size-1: 4px;
+    --size-2: 40px;
   }
 }
