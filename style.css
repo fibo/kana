@@ -6,9 +6,10 @@
 
 @layer colors {
   :root {
-    --color-white: white;
-    --color-neutral: gainsboro;
-    --color-accent: magenta;
+    --color-white: #fefefe;
+    --color-neutral-1: #dcdcdc;
+    --color-neutral-2: #e8e8e8;
+    --color-accent: #ff6347;
   }
 }
 

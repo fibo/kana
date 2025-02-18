@@ -6,29 +6,16 @@
   <meta name="viewport" content="width=device-width" />
   <title>kana</title>
   <link rel="stylesheet" href="style.css">
-
-  <template id="mora-char">
-    <slot></slot>
-  </template>
-
-  <template id="basic-katakana">
-    <mora-char index="0" display="katakana"></mora-char>
-    <mora-char index="1" display="katakana"></mora-char>
-    <mora-char index="2" display="katakana"></mora-char>
-    <mora-char index="3" display="katakana"></mora-char>
-    <mora-char index="4" display="katakana"></mora-char>
-  </template>
 </head>
 <body>
-  <p>Basic hiragana characters</p>
+  <h1>Learn kana</h1>
+  <memory-game rows="8"></memory-game>
+
+  <h3>Basic hiragana characters</h3>
   <basic-chars display="hiragana"></basic-chars>
 
-  <p>Basic katakana characters</p>
+  <h3>Basic katakana characters</h3>
   <basic-chars display="katakana"></basic-chars>
-
-  <basic-katakana></basic-katakana>
-
-  <memory-game></memory-game>
 
   <script type="module" src="elements.js"></script>
 </body>
