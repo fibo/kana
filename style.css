@@ -1,3 +1,10 @@
+@layer reset {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+}
+
 @layer typography {
   html {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
@@ -7,15 +14,23 @@
 @layer colors {
   :root {
     --color-white: #fefefe;
+    --color-black: #121212;
     --color-neutral-1: #dcdcdc;
     --color-neutral-2: #e8e8e8;
     --color-accent: #ff6347;
+  }
+
+  html {
+    background-color: var(--color-black);
   }
 }
 
 @layer space {
   :root {
     --size-1: 4px;
-    --size-2: 40px;
+    --size-2: 8px;
+    --size-3: 12px;
+    --cell-size: 40px;
+    --max-width: 800px;
   }
 }

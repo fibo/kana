@@ -1,5 +1,18 @@
 import { kana } from './kana.js'
 
+class Storage {
+  get display() {
+    const value = localStorage.getItem('display')
+    if (!value) return 'hiragana'
+    return value
+  }
+  set display(value) {
+    if (!value) localStorage.removeItem('display')
+    else localStorage.setItem('display', value)
+  }
+}
+const storage = new Storage()
+
 function html(strings, ...expressions) {
   const template = document.createElement('template')
   template.innerHTML = strings.reduce(
@@ -29,14 +42,13 @@ function shuffleArray(arr) {
  * <mora-char index="42" display="hiragana"></mora-char>
  */
 export class MoraChar extends HTMLElement {
-  static localName = 'mora-char'
   static get observedAttributes() { return ['index', 'display'] }
   textNode = document.createTextNode('')
   constructor() {
     super()
     this.appendChild(this.textNode)
   }
-  attributeChangedCallback(name, _old, value) {
+  attributeChangedCallback(name, _, value) {
     if (name == 'display') this.display = value
     if (name == 'index') this.index = value
     this.textNode.textContent = kana[this.index]?.[this.display] ?? ''
@@ -146,7 +158,7 @@ class BasicChars extends HTMLElement {
     `
     this.shadowRoot.appendChild(template.content.cloneNode(true))
   }
-  attributeChangedCallback(name, _old, value) {
+  attributeChangedCallback(name, _, value) {
     if (name == 'display')
       for (const element of this.shadowRoot.querySelectorAll('mora-char'))
         element.setAttribute('display', value)
@@ -178,8 +190,8 @@ class MemoryGame extends HTMLElement {
           background: var(--color-neutral-1);
         }
         .${cssClass.cell} {
-          width: var(--size-2);
-          height: var(--size-2);
+          width: var(--cell-size);
+          height: var(--cell-size);
           background: var(--color-white);
           border: 1px solid transparent;
           user-select: none;
@@ -344,9 +356,119 @@ class MemoryGame extends HTMLElement {
   }
 }
 
+class DisplayMenu extends HTMLElement {
+  constructor() {
+    super()
+    this.attachShadow({ mode: 'open' })
+    const template = html`
+      <style>
+        .container {
+          display: flex;
+          flex-direction: column;
+          gap: var(--size-2);
+        }
+        input[type=radio] {
+          accent-color: var(--color-black);
+
+        }
+      </style>
+      <div class="container">
+        <div>
+          <input type="radio" name="display" id="hiragana" />
+          <label for="hiragana">Hiragana</label>
+        </div>
+        <div>
+          <input type="radio" name="display" id="katakana" />
+          <label for="katakana">Katakana</label>
+        </div>
+      </div>
+    `
+    this.shadowRoot.appendChild(template.content.cloneNode(true))
+  }
+  connectedCallback() {
+    const learnKana = this.learnKana = document.querySelector('learn-kana')
+    const hiragana = this.hiragana = this.shadowRoot.querySelector('#hiragana')
+    const katakana = this.katakana = this.shadowRoot.querySelector('#katakana')
+    hiragana.addEventListener('change', this)
+    katakana.addEventListener('change', this)
+    const { display } = storage
+    if (display == 'hiragana') hiragana.checked = true
+    if (display == 'katakana') katakana.checked = true
+    learnKana.setAttribute('display', display)
+  }
+  handleEvent(event) {
+    if (event.type == 'change') {
+      const display = event.target.id
+      storage.display = display
+      this.learnKana.setAttribute('display', display)
+    }
+  }
+}
+
+class LearnKana extends HTMLElement {
+  static get observedAttributes() { return ['display'] }
+  constructor() {
+    super()
+    this.attachShadow({ mode: 'open' })
+    const template = html`
+      <style>
+        :host {
+          display: flex;
+          flex-direction: column;
+          gap: var(--size-3);
+          align-items: center;
+          background-color: var(--color-white);
+          max-width: var(--max-width);
+        }
+        main {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .help {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+      </style>
+
+      <main>
+        <h1>Learn kana</h1>
+        <memory-game rows="8"></memory-game>
+      </main>
+
+      <display-menu></display-menu>
+
+      <div class="help"></div>
+    `
+    this.shadowRoot.appendChild(template.content.cloneNode(true))
+  }
+  connectedCallback() {
+    this.help = this.shadowRoot.querySelector('.help')
+    this.showHelp(storage.display)
+  }
+  attributeChangedCallback(name, _, value) {
+    if (name == 'display') this.showHelp(value)
+  }
+  showHelp(display) {
+    const { help } = this
+    while (help.firstChild)
+      help.removeChild(help.lastChild)
+    const title = document.createElement('h3')
+    if (display == 'hiragana') title.textContent = 'Basic Hiragana'
+    if (display == 'katakana') title.textContent = 'Basic Katakana'
+    help.appendChild(title)
+    const content = document.createElement('basic-chars')
+    content.setAttribute('display', display)
+    help.appendChild(content)
+  }
+}
+
 addEventListener('load', () => {
   customElements.define('basic-chars', BasicChars)
   customElements.define('memory-game', MemoryGame)
   customElements.define('mora-char', MoraChar)
+  customElements.define('display-menu', DisplayMenu)
+  customElements.define('learn-kana', LearnKana)
 })
 
