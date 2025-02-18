@@ -80,7 +80,7 @@ export const kana = [
     katakana: 'タ',
   },
   {
-    latin: 'ti',
+    latin: 'chi',
     hiragana: 'ち',
     katakana: 'チ',
   },
